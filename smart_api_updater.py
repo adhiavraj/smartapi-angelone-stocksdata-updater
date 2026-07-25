@@ -9,8 +9,9 @@ from logzero import logger
 
 try:
     from SmartApi import SmartConnect
-except ImportError:
+except Exception as e:
     SmartConnect = None
+    logger.warning(f"SmartApi import failed: {e}")
 
 # Default Scrip Master URL
 SCRIP_MASTER_URL = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
@@ -65,7 +66,7 @@ class SmartAPIClient:
     def connect(self, manual_totp=None):
         """Authenticate with SmartAPI using TOTP."""
         if not SmartConnect:
-            raise RuntimeError("smartapi-python library is not installed.")
+            raise RuntimeError("smartapi-python library is not installed in this Python environment. Please run: python -m pip install smartapi-python setuptools")
 
         totp = manual_totp
         if not totp and self.totp_secret:
