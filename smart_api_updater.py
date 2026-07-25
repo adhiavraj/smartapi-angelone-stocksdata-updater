@@ -7,10 +7,12 @@ import openpyxl
 from datetime import datetime, date, timedelta
 from logzero import logger
 
+SMART_API_IMPORT_ERROR = None
 try:
     from SmartApi import SmartConnect
 except Exception as e:
     SmartConnect = None
+    SMART_API_IMPORT_ERROR = str(e)
     logger.warning(f"SmartApi import failed: {e}")
 
 # Default Scrip Master URL
@@ -66,7 +68,8 @@ class SmartAPIClient:
     def connect(self, manual_totp=None):
         """Authenticate with SmartAPI using TOTP."""
         if not SmartConnect:
-            raise RuntimeError("smartapi-python library is not installed in this Python environment. Please run: python -m pip install smartapi-python setuptools")
+            err_details = f" Reason: {SMART_API_IMPORT_ERROR}" if SMART_API_IMPORT_ERROR else ""
+            raise RuntimeError(f"smartapi-python library is not installed or failed to import in Python environment.{err_details} Please run: python -m pip install smartapi-python setuptools")
 
         totp = manual_totp
         if not totp and self.totp_secret:
